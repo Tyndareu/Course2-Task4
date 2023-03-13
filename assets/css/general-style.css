@@ -1,0 +1,145 @@
+body {
+  padding: 0px;
+  width: 90%;
+  margin: auto;
+  /*background-color: grey;*/
+}
+
+
+
+/*LOGO*/
+.logo {
+  display:flex;
+  margin-top: 40px;
+}
+.logo h1{
+  margin-top: 7px;
+  margin-left: 40px;
+}
+.mailto{
+  margin-top: 12px;
+  margin-left: auto;
+}
+
+/*NAV*/
+
+.menu {
+  display: flex;
+  margin: 40px 0px 40px 0px;
+}
+.menu button{
+  margin-right: 5px;
+}
+
+#congress {
+  padding: 10px;
+  border-radius: 8px;
+  border: solid 1px #286722;
+  background-color: #286722;
+  margin-right: 5px;
+}
+#congress p{
+  color: wheat;
+  margin: auto;
+}
+
+.btn-menu {
+  padding: 10px;
+  border-radius: 8px;
+  border: solid 1px #60c5e7;
+  background-color: #60c5e7;
+}
+.btn-menu:hover {
+  background-color: transparent;
+  border-radius: 8px;
+  border: solid 1px #60c5e7;
+}
+
+.btn-menu a{
+text-decoration: none;
+color: black;
+}
+
+.btn-submenu{
+padding: 5px;
+text-align: center;
+background-color:white;
+border: solid 1px #60c5e7;
+}
+.btn-submenu a{
+  margin: 1px 0px 0px 0px;
+  background-color: #60c5e7;
+  border-radius: 8px;
+  border: solid 1px #60c5e7;
+  }
+.btn-submenu a:hover{
+  background-color: white;
+  border-radius: 8px;
+  border: solid 1px #60c5e7;
+  }
+
+.filters form{
+  margin-block: auto;
+  
+}
+
+/*congress select*/
+#congressInfo p{
+  font-size: 1rem;
+  font-weight: normal;
+  margin-top: 10px;
+}
+#congressInfo h2{
+  font-size: 1.5rem;
+}
+
+/*TABLE */
+
+.divTabla {
+  height: 530px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  border: solid 4px #60c5e7;
+  border-radius: 10px;
+}
+
+.table-header {
+  background-color: #60c5e7;
+  font-size: 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+td {
+  text-align: center;
+}
+
+.table-row {
+  box-shadow: 5px 2px 9px 0px rgba(0, 0, 0, 0.1);
+}
+/*Table end*/
+
+/*CODIGO DESPLEGABLE*/
+
+#dropdownbtn {
+  margin-left: 10px;
+  margin-bottom: 5px;
+  background-color:#60c5e7;
+  border: solid 1px #60c5e7;
+  color: black;
+}
+
+#dropdown button {
+display: block;
+background-color:#60c5e7;
+
+border: solid 1px #60c5e7;
+border-radius: 10px;
+margin: 5px;  
+  }
+#dropdown button:hover{
+  background-color: transparent;
+  border: solid 1px #60c5e7;
+  border-radius: 10px;
+}
+
