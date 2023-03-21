@@ -36,7 +36,6 @@ body {
   border-radius: 8px;
   border: solid 1px #286722;
   background-color: #286722;
-  margin-right: 5px;
 }
 #congress p{
   color: wheat;
@@ -44,7 +43,8 @@ body {
 }
 
 .btn-menu {
-  padding: 10px;
+  padding: 8px;
+  margin-bottom: 5px;
   border-radius: 8px;
   border: solid 1px #60c5e7;
   background-color: #60c5e7;
