@@ -101,6 +101,7 @@ border: solid 1px #60c5e7;
   scroll-behavior: smooth;
   border: solid 4px #60c5e7;
   border-radius: 10px;
+  margin-bottom: 20px;
 }
 
 .table-header {
