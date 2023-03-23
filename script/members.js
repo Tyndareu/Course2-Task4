@@ -1,23 +1,36 @@
-//SENATORS JSON
-
 let params = new URL(document.location).searchParams;
 let chamber = params.get("chamber");
 let jsonSenators;
+const KEY = "QziPqLEQCaI1cI9ngA3NfTu7tUihuBCIYauTHncB";
 
 if (chamber === "senate") {
-  fetch("./assets/scr/senate.json")
+  fetch("https://api.propublica.org/congress/v1/117/senate/members.json", {
+    method: "GET",
+    withCredentials: true,
+    headers: {
+      "X-API-Key": KEY,
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
-      (jsonSenators = Array.from(data)), fulltabla();
+      (jsonSenators = data.results[0].members), fulltabla();
     })
     .catch((error) => {
       console.error("Error:", error);
     });
 } else {
-  fetch("./assets/scr/house.json")
+  fetch("https://api.propublica.org/congress/v1/117/house/members.json", {
+    method: "GET",
+    withCredentials: true,
+    headers: {
+      "X-API-Key": KEY,
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
-      (jsonSenators = Array.from(data)), (chamber = "house"), fulltabla();
+      (jsonSenators = data.results[0].members),
+        (chamber = "house"),
+        fulltabla();
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -34,7 +47,6 @@ function fulltabla() {
   congressP.className = "congress";
 
   congressP.textContent = chamber.toLocaleUpperCase();
-  console.log(jsonSenators);
   totalR.textContent =
     "Republicans :" + jsonSenators.filter((x) => x.party === "R").length;
   totalD.textContent =
@@ -297,6 +309,5 @@ function fulltabla() {
     // appends <table> into <body>
     document.querySelector("#tabla").appendChild(tabla);
   }
-
   generate_table();
 }

@@ -3,21 +3,39 @@
 let params = new URL(document.location).searchParams;
 let chamber = params.get("chamber");
 let jsonSenators;
+let jsonSenatorsFull;
+import { loyalStatistics } from "./congressinfo.js";
+let Statistics;
+const KEY = "QziPqLEQCaI1cI9ngA3NfTu7tUihuBCIYauTHncB";
 
 if (chamber === "senate") {
-  fetch("./assets/scr/congress.json")
+  fetch("https://api.propublica.org/congress/v1/117/senate/members.json", {
+    method: "GET",
+    withCredentials: true,
+    headers: {
+      "X-API-Key": KEY,
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
-      (jsonSenators = data[0].senate[1].members), fulltabla();
+      (jsonSenatorsFull = data.results[0].members), 
+      (Statistics = loyalStatistics[0].senateAtt),fulltabla();
     })
     .catch((error) => {
       console.error("Error:", error);
     });
 } else {
-  fetch("./assets/scr/congress.json")
+  fetch("https://api.propublica.org/congress/v1/117/house/members.json", {
+    method: "GET",
+    withCredentials: true,
+    headers: {
+      "X-API-Key": KEY,
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
-      (jsonSenators = data[1].house[1].members),
+      (jsonSenatorsFull = data.results[0].members),
+      (Statistics = loyalStatistics[1].houseAtt),
         (chamber = "house"),
         fulltabla();
     })
@@ -28,203 +46,47 @@ if (chamber === "senate") {
 
 function fulltabla() {
   //congress select item
+  const top = 15;
+  let topTen = Math.round((jsonSenatorsFull.length * top) / 100);
+  let totalPeople = jsonSenatorsFull.length-2;
 
+  let congressH2 = document.createElement("h2");
   let congressP = document.createElement("p");
-  let totalR = document.createElement("p");
-  let totalD = document.createElement("p");
-  let totalI = document.createElement("p");
-  congressP.className = "congress";
 
-  congressP.textContent = chamber.toLocaleUpperCase();
-  console.log(jsonSenators);
-  totalR.textContent =
-    "Republicans :" + jsonSenators.filter((x) => x.party === "R").length;
-  totalD.textContent =
-    "Democrats :" + jsonSenators.filter((x) => x.party === "D").length;
-  totalI.textContent =
-    "Independents :" + jsonSenators.filter((x) => x.party === "I").length;
+  congressH2.textContent =
+    chamber.toLocaleUpperCase() + " - Congressmen".toLocaleUpperCase();
 
-  document.querySelector("#congress").append(congressP, totalR, totalD, totalI);
+  congressP.textContent =
 
-  if (chamber === "house") {
-    let congressH2 = document.createElement("h2");
-    let congressP = document.createElement("p");
+    `Top ` +
+    top +
+    `% (` +
+    topTen +
+    ` Congressmen) "MISSED VOTES"`;
 
-    congressH2.textContent = "Congressmen".toLocaleUpperCase();
-    congressP.textContent = 'Loyalty';
+  document
+    .querySelector("#congressInfo")
+    .appendChild(congressH2)
+    .appendChild(congressP);
 
-    document
-      .querySelector("#congressInfo")
-      .appendChild(congressH2)
-      .appendChild(congressP);
-  } else {
-    let congressH2 = document.createElement("h2");
-    let congressP = document.createElement("p");
-    congressH2.textContent = "Senators".toLocaleUpperCase();
-    congressP.textContent = 'Loyalty';
-    document
-      .querySelector("#congressInfo")
-      .appendChild(congressH2)
-      .appendChild(congressP);
-  }
+  //TABLE 0
+  const headerTable0 = ["", "Nº of Reps.", "% Vote w/ Party"];
+  const statisticsItems = ["1", "2", "3"];
 
-  //STATES JSON
-  const jsonStates = {
-    AL: "Alabama",
-    AK: "Alaska",
-    AS: "American Samoa",
-    AZ: "Arizona",
-    AR: "Arkansas",
-    CA: "California",
-    CO: "Colorado",
-    CT: "Connecticut",
-    DE: "Delaware",
-    DC: "District Of Columbia",
-    FM: "Federated States Of Micronesia",
-    FL: "Florida",
-    GA: "Georgia",
-    GU: "Guam",
-    HI: "Hawaii",
-    ID: "Idaho",
-    IL: "Illinois",
-    IN: "Indiana",
-    IA: "Iowa",
-    KS: "Kansas",
-    KY: "Kentucky",
-    LA: "Louisiana",
-    ME: "Maine",
-    MH: "Marshall Islands",
-    MD: "Maryland",
-    MA: "Massachusetts",
-    MI: "Michigan",
-    MN: "Minnesota",
-    MS: "Mississippi",
-    MO: "Missouri",
-    MT: "Montana",
-    NE: "Nebraska",
-    NV: "Nevada",
-    NH: "New Hampshire",
-    NJ: "New Jersey",
-    NM: "New Mexico",
-    NY: "New York",
-    NC: "North Carolina",
-    ND: "North Dakota",
-    MP: "Northern Mariana Islands",
-    OH: "Ohio",
-    OK: "Oklahoma",
-    OR: "Oregon",
-    PW: "Palau",
-    PA: "Pennsylvania",
-    PR: "Puerto Rico",
-    RI: "Rhode Island",
-    SC: "South Carolina",
-    SD: "South Dakota",
-    TN: "Tennessee",
-    TX: "Texas",
-    UT: "Utah",
-    VT: "Vermont",
-    VI: "Virgin Islands",
-    VA: "Virginia",
-    WA: "Washington",
-    WV: "West Virginia",
-    WI: "Wisconsin",
-    WY: "Wyoming",
-  };
-
-  //checkbox
-
-  let jsonTabla = jsonSenators;
-  let jsonTablaState = [];
-  let jsonTablaStateFilter = [""];
-
-  let checkboxes = Array.from(document.getElementsByClassName("party"));
-  let checkBox = [];
-  checkboxes.forEach((element) => {
-    element.addEventListener("change", function (event) {
-      if (element.checked) {
-        checkBox.push(element.value);
-      }
-      if (!element.checked) {
-        checkBox = checkBox.filter((x) => x != element.value);
-      }
-      let key = checkBox.length;
-      switch (key) {
-        case 2:
-          let push = [];
-          checkBox.forEach((element) => {
-            push.push(
-              Array.from(jsonSenators.filter((x) => x.party === element))
-            );
-          });
-          jsonTabla = push[1].concat(push[0]);
-          generate_table();
-          break;
-        case 1:
-          jsonTabla = jsonSenators.filter(
-            (x) => x.party === checkBox.toString()
-          );
-          generate_table();
-          break;
-        default:
-          jsonTabla = jsonSenators;
-          generate_table();
-          break;
-      }
-    });
-  });
-
-  //Dropdown States Filter
-
-  document.getElementById("dropdownbtn").onclick = function () {
-    //Delete DropDown
-    const dropdownbtn = document.querySelector("#dropdown");
-    dropdownbtn.innerHTML = " ";
-
-    // button "all states"
-    let buttonAllStates = document.createElement("button");
-    buttonAllStates.value = "all";
-    buttonAllStates.className = "dropdownoption";
-    let aAllStates = document.createElement("a");
-    aAllStates.appendChild(document.createTextNode("All States"));
-    document
-      .querySelector("#dropdown")
-      .appendChild(buttonAllStates)
-      .appendChild(aAllStates);
-    // button all states end
-
-    let states;
-    for (const prop in jsonStates) {
-      let button = document.createElement("button");
-      button.value = prop;
-      button.className = "dropdownoption";
-
-      let a = document.createElement("a");
-      states = jsonStates[prop];
-
-      a.appendChild(document.createTextNode(states));
-      document.querySelector("#dropdown").appendChild(button).appendChild(a);
-    }
-    dropDownOptionFunction();
-  };
-
-  //DESPLEGABLE OPTION
-  function dropDownOptionFunction() {
-    const dropdownoption = document.querySelectorAll(".dropdownoption");
-    dropdownoption.forEach((button) => {
-      button.addEventListener("click", function (event) {
-        jsonTablaStateFilter = button.value;
-        generate_table();
-      });
-    });
-  }
-
-  //TABLE
-  const headerItems = [
+  // tABLE 0 END
+  const headerTable1 = [
     "Name",
     "Party",
     "State",
     "Votes With Party %",
-    "votes Against Party %",
+    "Votes Against Party% ⇓",
+  ];
+  const headerTable2 = [
+    "Name",
+    "Party",
+    "State",
+    "Votes With Party %",
+    "Votes Against Party% ⇑",
   ];
   const senatorItems = [
     "first_name",
@@ -234,21 +96,11 @@ function fulltabla() {
     "votes_against_party_pct",
   ];
 
-  function generate_table() {
-    const deleteTable = document.querySelector("#tabla");
+  //Table 0
+
+  function generate_table0() {
+    const deleteTable = document.querySelector("#tabla0");
     deleteTable.innerHTML = " ";
-
-    if (jsonTablaStateFilter != "" && jsonTablaStateFilter != "all") {
-      jsonTablaState = jsonTabla.filter(
-        (x) => x.state === jsonTablaStateFilter
-      );
-    } else {
-      jsonTablaState = jsonTabla;
-    }
-
-    jsonTablaState = jsonTablaState.sort(
-      (y, x) => x.votes_against_party_pct - y.votes_against_party_pct
-    );
 
     // Crea un elemento <table> y un elemento <tbody>
     const tabla = document.createElement("table");
@@ -259,7 +111,7 @@ function fulltabla() {
     const rowHeader = document.createElement("tr");
     rowHeader.className = "table-header";
 
-    headerItems.forEach((element) => {
+    headerTable0.forEach((element) => {
       const cell = document.createElement("td");
       const cellText = document.createTextNode(element);
 
@@ -271,12 +123,14 @@ function fulltabla() {
     // Header End
 
     // Create cells
-    jsonTablaState.forEach((element) => {
+
+    Statistics.forEach((element) => {
       // Crea las rows de la tabla
+
       const row = document.createElement("tr");
       row.className = "table-row";
 
-      senatorItems.forEach((element2) => {
+      statisticsItems.forEach((element2) => {
         const cell = document.createElement("td");
         const cellText = document.createTextNode(element[element2]);
         cell.appendChild(cellText);
@@ -290,8 +144,122 @@ function fulltabla() {
     // posiciona el <tbody> debajo del elemento <table>
     tabla.appendChild(tblBody);
     // appends <table> into <body>
+    document.querySelector("#tabla0").appendChild(tabla);
+  }
+  //TABLA1
+  function generate_table() {
+    const deleteTable = document.querySelector("#tabla");
+    deleteTable.innerHTML = " ";
+    jsonSenators = jsonSenatorsFull
+      .sort((y, x) => x.votes_against_party_pct - y.votes_against_party_pct)
+      .slice(0, topTen);
+
+    // Crea un elemento <table> y un elemento <tbody>
+    const tabla = document.createElement("table");
+    tabla.className = "table table-striped table-bordered";
+    const tblBody = document.createElement("tbody");
+
+    // Header
+    const rowHeader = document.createElement("tr");
+    rowHeader.className = "table-header";
+
+    headerTable1.forEach((element) => {
+      const cell = document.createElement("td");
+      const cellText = document.createTextNode(element);
+
+      cell.appendChild(cellText);
+      rowHeader.appendChild(cell);
+      // agrega la row al final de la tabla (al final del elemento tblbody)
+      tblBody.appendChild(rowHeader);
+    });
+    // Header End
+
+    // Create cells
+    jsonSenators.forEach((element) => {
+      // Crea las rows de la tabla
+      if (element.missed_votes) {
+        const row = document.createElement("tr");
+        row.className = "table-row";
+
+        senatorItems.forEach((element2) => {
+          const cell = document.createElement("td");
+          const cellText = document.createTextNode(element[element2]);
+          cell.appendChild(cellText);
+          row.appendChild(cell);
+        });
+
+        // agrega la row al final de la tabla (al final del elemento tblbody)
+        tblBody.appendChild(row);
+      }
+    });
+
+    // posiciona el <tbody> debajo del elemento <table>
+    tabla.appendChild(tblBody);
+    // appends <table> into <body>
     document.querySelector("#tabla").appendChild(tabla);
   }
 
+  //Table 2
+
+  function generate_table2() {
+    const deleteTable = document.querySelector("#tabla2");
+    deleteTable.innerHTML = " ";
+
+    jsonSenators = jsonSenatorsFull
+      .sort((x, y) => x.votes_against_party_pct - y.votes_against_party_pct)
+      .slice(0, topTen);
+
+    // Crea un elemento <table> y un elemento <tbody>
+    const tabla = document.createElement("table");
+    tabla.className = "table table-striped table-bordered";
+    const tblBody = document.createElement("tbody");
+
+    // Header
+    const rowHeader = document.createElement("tr");
+    rowHeader.className = "table-header";
+
+    headerTable2.forEach((element) => {
+      const cell = document.createElement("td");
+      const cellText = document.createTextNode(element);
+
+      cell.appendChild(cellText);
+      rowHeader.appendChild(cell);
+      // agrega la row al final de la tabla (al final del elemento tblbody)
+      tblBody.appendChild(rowHeader);
+    });
+    // Header End
+
+    // Create cells
+    jsonSenators.forEach((element) => {
+      // Crea las rows de la tabla
+      if (element.missed_votes !== null) {
+        const row = document.createElement("tr");
+        row.className = "table-row";
+
+        senatorItems.forEach((element2) => {
+          const cell = document.createElement("td");
+          const cellText = document.createTextNode(element[element2]);
+          cell.appendChild(cellText);
+          row.appendChild(cell);
+        });
+
+        // agrega la row al final de la tabla (al final del elemento tblbody)
+        tblBody.appendChild(row);
+      }
+    });
+
+    // posiciona el <tbody> debajo del elemento <table>
+    tabla.appendChild(tblBody);
+    // appends <table> into <body>
+    document.querySelector("#tabla2").appendChild(tabla);
+  }
+  generate_table0();
   generate_table();
+  generate_table2();
+  let total55 = 0;
+  jsonSenatorsFull.forEach((element) => {
+    if (element.missed_votes_pct) {
+      total55 += element.missed_votes_pct;
+    }
+  });
 }
